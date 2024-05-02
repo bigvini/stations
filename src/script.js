@@ -2,7 +2,6 @@
 const BASE_URL = "http://localhost:3000/stations";
 
 const elements = {
-    stationIdInput: document.getElementById('station-id-input'),
     stationsList: document.getElementById('stations-list'),
     showDeleteFormButton: document.getElementById('show-delete-form'),
     updateButton: document.getElementById('update-button'),
@@ -115,50 +114,45 @@ async function toggleFormVisibility(form) {
     }
 }
 
+async function getInputElement(inputId) {
+    const inputElement = document.getElementById(inputId);
+    const inputValue = inputElement.value.trim();
+    inputElement.value = '';
+    return inputValue;
+}
+
 elements.addButton.addEventListener('click', async () => {
-        const stationNameInput = document.getElementById('station-add-input');
-        const stationName = stationNameInput.value.trim();
+        const stationName = await getInputElement('station-add-input');
+        console.log(stationName);
             const newStationData = {
                 address: stationName,
                 status: true ,
             };
             await addStation(newStationData);
-            stationNameInput.value = '';
             await showStations();
 });
 
 elements.deleteButton.addEventListener('click', async () => {
-    const stationIdInput = document.getElementById('station-id-input');
-    const stationID = stationIdInput.value.trim();
+    const stationID =  await getInputElement('station-id-input');
     await deleteStation(stationID);
-    stationIdInput.value = '';
     await showStations();
 
 })
 
 elements.editButton.addEventListener('click', async () => {
-    const stationIdInput = document.getElementById('station-edit-id-input');
-    const stationID = stationIdInput.value.trim();
-    console.log(stationID);
-    const stationAddressInput = document.getElementById('station-address-input');
-    const stationNewAddress = stationAddressInput.value.trim();
+    const stationID = await getInputElement('station-edit-id-input');
+    const stationNewAddress = await getInputElement('station-address-input');
     const stationStatusInput = document.getElementById('station-status-input');
     const newStatus = stationStatusInput.checked;
-    stationIdInput.value = '';
-    stationAddressInput.value = '';
     stationStatusInput.checked = false;
     const editSuccessful = await editStation(stationID, { address: stationNewAddress, status: newStatus });
     if(editSuccessful) {
         await showStations();
-
     }
 });
-
 
 elements.showAddFormButton.addEventListener('click', () => toggleFormVisibility(elements.addForm));
 elements.showDeleteFormButton.addEventListener('click', () => toggleFormVisibility(elements.deleteForm));
 elements.showEditFormButton.addEventListener('click', () => toggleFormVisibility(elements.editForm));
 elements.showActiveStationsButton.addEventListener('click', () => showStations(true));
 elements.updateButton.addEventListener('click', () => showStations());
-
-
